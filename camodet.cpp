@@ -70,6 +70,9 @@ int main(int argc, char** argv) {
 		dilate(binary,dilated, element, Point(-1,-1), 2);
 		vector<vector < Point > > contours0;
 		findContours(dilated, contours0, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+		ostringstream nameStream;
+
 		for (size_t k = 0; k < contours0.size(); k++) {
 			if (contourArea(contours0[k]) < 600) {
 				continue;
@@ -82,8 +85,8 @@ int main(int argc, char** argv) {
 				record = true;
 				t1 = getTickCount();
 				counter++;
-				sprintf(name,"%s%d.avi", settings.output_name.c_str() , counter);
-				writer.open(name, CV_FOURCC('X','V','I','D'),15,size);
+				nameStream << settings.output_name << counter << ".avi";
+				writer.open(nameStream.str().c_str(), CV_FOURCC('X','V','I','D'),15,size);
 			}
 	
 		}

@@ -13,4 +13,5 @@ Depends on OpenCV3 and CMake.
 2) cd build
 3) cmake ..
 4) make
+
 done!

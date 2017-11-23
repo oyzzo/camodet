@@ -7,7 +7,9 @@ The existing solutions were too complicated to install and set up, too slow, aba
 camodet is ultra lightweight, portable and fast, it can be run in a raspberry pi or similar.
 
 ## Compile
-Depends on OpenCV3 and CMake.
+For Ubuntu based distros use the __prepare.sh__ script, it'll install all dependencies and will compile OpenCV3.
+For other distros use the script as a guide for the steps.
+The www.opencv.org documentation on how to compile it for your Operating System, can also be used.
 
 1) mkdir build
 2) cd build

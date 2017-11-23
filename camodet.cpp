@@ -89,6 +89,23 @@ int main(int argc, char** argv) {
 		findContours(dilated, contours0, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
 		ostringstream nameStream;
+		ostringstream timeStream;
+
+		auto now = chrono::system_clock::now();
+		time_t time_now = chrono::system_clock::to_time_t(now);
+		timeStream << ctime(&time_now);
+		string time = timeStream.str();
+		time.erase(std::remove(time.begin(), time.end(), '\n'), time.end());
+
+		//Camera Name
+		if (settings.cam_name != "") {
+			putText(frame, settings.cam_name, Point2f(15,25), FONT_HERSHEY_PLAIN, 2,  Scalar(0,0,255,255), 2);
+		}
+
+		//Add timestamp to video
+		if (settings.timestamp) {
+			putText(frame, time, Point2f(15,size.height - 15), FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255), 2);
+		}
 
 		for (size_t k = 0; k < contours0.size(); k++) {
 			if (contourArea(contours0[k]) < settings.area) {
@@ -114,6 +131,7 @@ int main(int argc, char** argv) {
 			t2 = getTickCount();	
 		}
 		motion = 0; /* Reset motion detected for the new frame */
+
 
 		//Show input source if desired
 		if (settings.show_input) {

@@ -7,12 +7,14 @@ Settings::Settings()
 {
 	input_source ="";
 	output_name ="recording";
+	cam_name ="";
 	show_input = false;
 	seconds_after = DEFAULT_SECONDS_AFTER;
 	counter_start = 0;
 	debug = 0;
 	area = 600;
 	noise = 21;
+	timestamp = false;
 }
 
 /** @brief Load settings from command line arguments
@@ -25,7 +27,7 @@ int Settings::load_from_args(int argc, char* argv[])
 	int opt;
 	bool will_print_usage = false;
 
-	while ((opt = getopt(argc, argv, "i:o:sa:c:d:ht:n:")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:sa:c:d:ht:n:l:D")) != -1) {
 		switch (opt) {
 		case 'i':
 			input_source = optarg;
@@ -35,6 +37,9 @@ int Settings::load_from_args(int argc, char* argv[])
 			break;
 		case 's':
 			show_input = true;
+			break;
+		case 'D':
+			timestamp = true;
 			break;
 		case 'a':
 			seconds_after = atoi(optarg);
@@ -53,6 +58,9 @@ int Settings::load_from_args(int argc, char* argv[])
 			break;
 		case 'n':
 			noise = atoi(optarg);
+			break;
+		case 'l':
+			cam_name = optarg;
 			break;
 		default: /* '?' */
 			will_print_usage = true;
@@ -85,16 +93,18 @@ int Settings::load_from_args(int argc, char* argv[])
  */
 void Settings::print_usage(char* name)
 {
-	cerr << endl << "Usage: " << name << " [-i input_video]"
-	<< " [-o output_name] [-s] [-a seconds] [-c num] [-d num]" << endl
+	cerr << endl << "Usage: " << name << " [options]" << endl
+	<< "Options:" << endl
 	<< "    -h              Print this help message." << endl
 	<< "    -i input_video: The source for motion detection." << endl
 	<< "    -o output_name: The name for the output recordings." << endl
 	<< "                    A number and extension will be automatically added after it:" << endl
-	<< "                    	e.g. output_name23.avi" << endl
+	<< "                      e.g. output_name23.avi" << endl
 	<< "    -s:             Open window showing the input video." << endl
+	<< "    -D:             Date and time labelled to video." << endl
 	<< "    -a seconds:     Seconds to record after the motion has stopped." << endl
 	<< "    -c number:      Counter number to skip using in the output name (Default 0)." << endl
+	<< "    -l cam_name:    Label camera name on video." << endl
 	<< "    -t number:      Threshold area (sqare pixels) to trigger detection. \
 	                        Movements below this area are ignored (Default 600)." << endl
 	<< "    -n number:      Noise reduction level (Default 21)." << endl

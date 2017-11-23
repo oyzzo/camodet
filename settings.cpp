@@ -11,6 +11,7 @@ Settings::Settings()
 	seconds_after = DEFAULT_SECONDS_AFTER;
 	counter_start = 0;
 	debug = 0;
+	area = 600;
 }
 
 /** @brief Load settings from command line arguments
@@ -23,7 +24,7 @@ int Settings::load_from_args(int argc, char* argv[])
 	int opt;
 	bool will_print_usage = false;
 
-	while ((opt = getopt(argc, argv, "i:o:sa:c:d:h")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:sa:c:d:ht:")) != -1) {
 		switch (opt) {
 		case 'i':
 			input_source = optarg;
@@ -45,6 +46,9 @@ int Settings::load_from_args(int argc, char* argv[])
 			break;
 		case 'h':
 			will_print_usage = true;
+			break;
+		case 't':
+			area = atoi(optarg);
 			break;
 		default: /* '?' */
 			will_print_usage = true;
@@ -82,6 +86,7 @@ void Settings::print_usage(char* name)
 	<< "    -s:             Open window showing the input video." << endl
 	<< "    -a seconds:     Seconds to record after the motion has stopped." << endl
 	<< "    -c number:      Counter number to start using in the output name." << endl
+	<< "    -t number:      Threshold area (sqare pixels) to trigger detection. Movements below this area are ignored." << endl
 	<< "    -d number:      Show intermediate images in a debug window. Number can be:" << endl
 	<< "                    1: noise reduction | 2: frames difference | 3: threshold | 4:dilated(final)" << endl;
 }

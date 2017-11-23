@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 		ostringstream nameStream;
 
 		for (size_t k = 0; k < contours0.size(); k++) {
-			if (contourArea(contours0[k]) < 600) {
+			if (contourArea(contours0[k]) < settings.area) {
 				continue;
 			}
 			

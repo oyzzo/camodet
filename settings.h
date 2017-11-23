@@ -15,6 +15,7 @@ public:
 	unsigned int counter_start; /** Output filename counter start */
 	unsigned int debug; /** Debug window showing intermediate images */
 	unsigned int area; /** The threshold area to detect movement */
+	unsigned int noise; /** The noise reduction gaussian size */
 	bool show_input; /** Shall we show the input video */
 	int load_from_args(int argc, char* argv[]); /** Load settings from arguments */
 	void print_usage(char* name); /** Load settings from arguments */

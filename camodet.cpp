@@ -68,13 +68,15 @@ int main(int argc, char** argv) {
 	);
 	Mat frame, pyr1, gray, gaus, delta, old, binary, dilated;
 	Mat element = getStructuringElement(MORPH_RECT,Size(7,7),Point(-1,-1));
+
+	unsigned int n = settings.noise;
 	for (;;) {
 		cap >> frame;
 
 		if (frame.empty()) break; //ran out of film
 		pyrDown(frame,pyr1);
 		cvtColor(pyr1, gray, COLOR_BGR2GRAY);
-		GaussianBlur(gray, gaus,Size(21,21), 5,5);
+		GaussianBlur(gray, gaus,Size(n,n), 5,5);
 		if (!started) {
 			gaus.copyTo(old);
 			started = true;

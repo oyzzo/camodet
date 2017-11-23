@@ -12,6 +12,7 @@ Settings::Settings()
 	counter_start = 0;
 	debug = 0;
 	area = 600;
+	noise = 21;
 }
 
 /** @brief Load settings from command line arguments
@@ -24,7 +25,7 @@ int Settings::load_from_args(int argc, char* argv[])
 	int opt;
 	bool will_print_usage = false;
 
-	while ((opt = getopt(argc, argv, "i:o:sa:c:d:ht:")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:sa:c:d:ht:n:")) != -1) {
 		switch (opt) {
 		case 'i':
 			input_source = optarg;
@@ -50,6 +51,9 @@ int Settings::load_from_args(int argc, char* argv[])
 		case 't':
 			area = atoi(optarg);
 			break;
+		case 'n':
+			noise = atoi(optarg);
+			break;
 		default: /* '?' */
 			will_print_usage = true;
 			break;
@@ -60,6 +64,11 @@ int Settings::load_from_args(int argc, char* argv[])
 	if (debug < 0 || debug > 4) {
 		cerr << "Error: debug step doesn't correspond to a valid number." << endl;
 		will_print_usage = true;
+	}
+
+	//odd gaussian matrix size
+	if (noise % 2 == 0) {
+		noise++;
 	}
 
 	if (will_print_usage) {
@@ -85,8 +94,10 @@ void Settings::print_usage(char* name)
 	<< "                    	e.g. output_name23.avi" << endl
 	<< "    -s:             Open window showing the input video." << endl
 	<< "    -a seconds:     Seconds to record after the motion has stopped." << endl
-	<< "    -c number:      Counter number to start using in the output name." << endl
-	<< "    -t number:      Threshold area (sqare pixels) to trigger detection. Movements below this area are ignored." << endl
+	<< "    -c number:      Counter number to skip using in the output name (Default 0)." << endl
+	<< "    -t number:      Threshold area (sqare pixels) to trigger detection. \
+	                        Movements below this area are ignored (Default 600)." << endl
+	<< "    -n number:      Noise reduction level (Default 21)." << endl
 	<< "    -d number:      Show intermediate images in a debug window. Number can be:" << endl
 	<< "                    1: noise reduction | 2: frames difference | 3: threshold | 4:dilated(final)" << endl;
 }

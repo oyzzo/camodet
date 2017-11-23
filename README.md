@@ -1,5 +1,5 @@
 # camodet
-CAmera MOtion DEtection application. 
+CAmera MOtion DETection application. 
 
 Fast, simple and stable motion detection application that works with any local and remote cameras or video sources.
 

@@ -40,6 +40,7 @@ NCPUS=`cat /proc/cpuinfo | grep processor | wc -l`
 cd ./opencv && mkdir build && cd build
 cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local ..
 make -j $NCPUS
+make install
 
 # DONE! now everything is prepared to compile camodet
 echo "\nDONE, now build camodet:"

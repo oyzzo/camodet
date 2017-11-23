@@ -50,9 +50,6 @@ int Settings::load_from_args(int argc, char* argv[])
 	}
 
 	//Validate the configuration
-	if (output_name == "") {
-		cerr << "Error: output name for recordings needed." << endl;
-		will_print_usage = true;
 	} else if (debug < 0 || debug > 4) {
 		cerr << "Error: debug step doesn't correspond to a valid number." << endl;
 		will_print_usage = true;

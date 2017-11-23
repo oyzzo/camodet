@@ -30,6 +30,7 @@ For Ubuntu based distros use the __prepare.sh__ script, it'll install all depend
 For other distros use the script as a guide for the steps.
 The www.opencv.org documentation on how to compile it for your Operating System, can also be used.
 
+Download and extract the sources, then inside:
 1) mkdir build
 2) cd build
 3) cmake ..

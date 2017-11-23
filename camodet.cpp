@@ -1,12 +1,27 @@
 #include "opencv2/highgui/highgui.hpp" 
 #include "opencv2/imgproc/imgproc.hpp" 
 #include <math.h>
+#include <ctime>
+#include <chrono>
+
 #include "settings.h"
 
 #define TIME_REC_AFTER 10 /* Record seconds after stop motion */
 
 using namespace cv;
 using namespace std;
+
+/** @brief Helper logging function
+ * This function logs events to stdout
+ * @param event The string describing the event to log
+ * @param quiet The quiet flag status to disable logging
+ */
+static void log_event(string event)
+{
+	auto now = chrono::system_clock::now();
+	time_t time_now = chrono::system_clock::to_time_t(now);
+	cout << ctime(&time_now) << " - " << event << endl;
+}
 
 int main(int argc, char** argv) {
 	Settings settings;
@@ -87,6 +102,8 @@ int main(int argc, char** argv) {
 				counter++;
 				nameStream << settings.output_name << counter << ".avi";
 				writer.open(nameStream.str().c_str(), CV_FOURCC('X','V','I','D'),15,size);
+				log_event("Motion Start");
+				log_event("Recording file: " + nameStream.str());
 			}
 	
 		}
@@ -106,13 +123,13 @@ int main(int argc, char** argv) {
 		if (record && t2 != 0) {
 			t3 = getTickCount();
 			double tf = (t3 - t2)/(double)getTickFrequency();
-			printf("TIME %f\n", tf);
 			if ( tf >= settings.seconds_after) {
 				record = false;
 				t1 = 0;
 				t2 = 0;
 				t3 = 0;	
 				writer.release();
+				log_event("Motion Stop");
 			}
 		}
 		if (record) {

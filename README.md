@@ -22,6 +22,8 @@ __camodet__ is ultra lightweight, portable and fast, it can be run in a raspberr
 * __Visual debug__ mode shows how the video is processed in any step! It's great for finding the right values that work for your camera. 
 * __Portable__. Compile it on any platform supported by OpenCV3.
 * __Written in__ fast and stable __C++!__ Forget about software written in prototyping or web languages (nodejs, php, python etc..)
+* __Add camera name__, if the camera does not support it, camodet labels the videos using a camera name label.
+* __Add date and time__ to the video, very usefull to see in the recordings.
 
 ## Compile
 For Ubuntu based distros use the __prepare.sh__ script, it'll install all dependencies and will compile OpenCV3.

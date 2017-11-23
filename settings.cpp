@@ -23,7 +23,7 @@ int Settings::load_from_args(int argc, char* argv[])
 	int opt;
 	bool will_print_usage = false;
 
-	while ((opt = getopt(argc, argv, "i:o:sa:c:d:")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:sa:c:d:h")) != -1) {
 		switch (opt) {
 		case 'i':
 			input_source = optarg;
@@ -42,6 +42,9 @@ int Settings::load_from_args(int argc, char* argv[])
 			break;
 		case 'd':
 			debug = atoi(optarg);
+			break;
+		case 'h':
+			will_print_usage = true;
 			break;
 		default: /* '?' */
 			will_print_usage = true;
@@ -71,6 +74,7 @@ void Settings::print_usage(char* name)
 {
 	cerr << endl << "Usage: " << name << " [-i input_video]"
 	<< " [-o output_name] [-s] [-a seconds] [-c num] [-d num]" << endl
+	<< "    -h              Print this help message." << endl
 	<< "    -i input_video: The source for motion detection." << endl
 	<< "    -o output_name: The name for the output recordings." << endl
 	<< "                    A number and extension will be automatically added after it:" << endl

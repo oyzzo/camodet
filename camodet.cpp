@@ -31,7 +31,6 @@ int main(int argc, char** argv) {
 	}
 
 	bool record = false;
-	double t1 = 0;
 	double t2 = 0;
 	double t3 = 0;
 	int motion = 0;
@@ -61,7 +60,6 @@ int main(int argc, char** argv) {
 	}
 
 
-	double fps = cap.get(CAP_PROP_FPS);
 	Size size(
 		(int)cap.get(CAP_PROP_FRAME_WIDTH),
 		(int)cap.get(CAP_PROP_FRAME_HEIGHT)
@@ -117,7 +115,6 @@ int main(int argc, char** argv) {
 
 			if (!record) {
 				record = true;
-				t1 = getTickCount();
 				counter++;
 				nameStream << settings.output_name << counter << ".avi";
 				writer.open(nameStream.str().c_str(), CV_FOURCC('X','V','I','D'),15,size);
@@ -145,9 +142,7 @@ int main(int argc, char** argv) {
 			double tf = (t3 - t2)/(double)getTickFrequency();
 			if ( tf >= settings.seconds_after) {
 				record = false;
-				t1 = 0;
 				t2 = 0;
-				t3 = 0;	
 				writer.release();
 				log_event("Motion Stop");
 			}

@@ -13,7 +13,7 @@ endfunction()
 find_package(OpenCV REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 add_executable( camodet camodet.cpp settings.cpp)
-add_clang_static_analysis( camodet camodet.cpp settings.cpp)
+add_clang_static_analysis( camodet )
 target_link_libraries( camodet ${OpenCV_LIBS} )
 
 

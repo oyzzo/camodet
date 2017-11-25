@@ -36,7 +36,6 @@ int main(int argc, char** argv) {
 	int motion = 0;
 	VideoWriter writer;
 	int counter = 0; /* Video name counter */
-	char name[255];
 
 	VideoCapture cap;
 	bool started = false;

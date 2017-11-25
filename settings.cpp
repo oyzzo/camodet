@@ -69,7 +69,7 @@ int Settings::load_from_args(int argc, char* argv[])
 	}
 
 	//Validate the configuration
-	if (debug < 0 || debug > 4) {
+	if (debug > 4) {
 		cerr << "Error: debug step doesn't correspond to a valid number." << endl;
 		will_print_usage = true;
 	}

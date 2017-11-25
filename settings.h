@@ -19,6 +19,7 @@ public:
 	unsigned int noise; /** The noise reduction gaussian size */
 	bool show_input; /** Shall we show the input video */
 	bool timestamp; /** Shall we add the time to the video */
+	bool mask_template; /** Shall we generate a mask template */
 	int load_from_args(int argc, char* argv[]); /** Load settings from arguments */
 	void print_usage(char* name); /** Load settings from arguments */
 	Settings();

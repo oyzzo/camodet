@@ -23,6 +23,28 @@ static void log_event(string event)
 	cout << ctime(&time_now) << " - " << event << endl;
 }
 
+/** @brief Sabe ROI mask template to image file
+ * This function generates an image template for creating
+ * The ROI mask.
+ * @param cap VideoCapture where extract a frame for the image
+ */
+static void generate_mask_template(Mat frame)
+{
+	vector<int> compression_params;
+	compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	compression_params.push_back(9);
+
+    try {
+        imwrite("mask.png", frame, compression_params);
+    }
+    catch (runtime_error& ex) {
+        cerr << "Exception converting image to PNG format: " << ex.what() << endl;
+        return;
+    }
+
+    log_event("Saved template for ROI Mask image.");
+}
+
 int main(int argc, char** argv) {
 	Settings settings;
 
@@ -65,6 +87,12 @@ int main(int argc, char** argv) {
 	);
 	Mat frame, pyr1, gray, gaus, delta, old, binary, dilated;
 	Mat element = getStructuringElement(MORPH_RECT,Size(7,7),Point(-1,-1));
+
+	//Generate ROI mask template if needed
+	if (settings.mask_template) {
+		cap >> frame;
+		generate_mask_template(frame);
+	}
 
 	unsigned int n = settings.noise;
 	for (;;) {

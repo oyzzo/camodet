@@ -15,6 +15,7 @@ Settings::Settings()
 	area = 600;
 	noise = 21;
 	timestamp = false;
+	mask_template = false;
 }
 
 /** @brief Load settings from command line arguments
@@ -27,7 +28,7 @@ int Settings::load_from_args(int argc, char* argv[])
 	int opt;
 	bool will_print_usage = false;
 
-	while ((opt = getopt(argc, argv, "i:o:sa:c:d:ht:n:l:D")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:sa:c:d:ht:n:l:Dg")) != -1) {
 		switch (opt) {
 		case 'i':
 			input_source = optarg;
@@ -61,6 +62,9 @@ int Settings::load_from_args(int argc, char* argv[])
 			break;
 		case 'l':
 			cam_name = optarg;
+			break;
+		case 'g':
+			mask_template = true;
 			break;
 		default: //Should never happen
 			will_print_usage = true;

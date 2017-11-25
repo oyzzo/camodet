@@ -85,13 +85,22 @@ int main(int argc, char** argv) {
 		(int)cap.get(CAP_PROP_FRAME_WIDTH),
 		(int)cap.get(CAP_PROP_FRAME_HEIGHT)
 	);
-	Mat frame, pyr1, gray, gaus, delta, old, binary, dilated;
+	Mat frame, pyr1, gray, gaus, delta, old, binary, dilated, mask, bin_mask;
 	Mat element = getStructuringElement(MORPH_RECT,Size(7,7),Point(-1,-1));
 
 	//Generate ROI mask template if needed
 	if (settings.mask_template) {
 		cap >> frame;
 		generate_mask_template(frame);
+	}
+	
+	//Load the ROI mask image and binaryze
+	bool do_mask = false;
+	if (settings.mask_file != "") {
+		do_mask = true;
+		mask = imread(settings.mask_file,IMREAD_GRAYSCALE);	
+		pyrDown(mask,mask);
+		threshold(mask,bin_mask,15,255,THRESH_BINARY);
 	}
 
 	unsigned int n = settings.noise;
@@ -109,6 +118,10 @@ int main(int argc, char** argv) {
 		absdiff(old,gaus,delta);	
 		gaus.copyTo(old);
 		threshold(delta,binary,15,255,THRESH_BINARY);
+		if (do_mask) {
+			//Input, Input, output
+			bitwise_and(bin_mask, binary, binary);		
+		}
 		dilate(binary,dilated, element, Point(-1,-1), 2);
 		vector<vector < Point > > contours0;
 		findContours(dilated, contours0, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);

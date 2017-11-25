@@ -12,6 +12,7 @@ public:
 	string input_source; /** The video we'll detect motion */
 	string output_name; /** The name used for output recordings */
 	string cam_name; /** The name used for camera */
+	string mask_file; /** The name of the mask file to load */
 	unsigned int seconds_after; /** Seconds to record after motion stops */
 	unsigned int counter_start; /** Output filename counter start */
 	unsigned int debug; /** Debug window showing intermediate images */

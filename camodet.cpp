@@ -164,6 +164,8 @@ int main(int argc, char** argv) {
 		case 4:
 			imshow("Debug", dilated ); //Dilated
 			break;
+		default: //Should never happen
+			break;
 		}
 		if(waitKey(33) == 0) return 0;
 	}	

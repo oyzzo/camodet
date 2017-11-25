@@ -62,7 +62,7 @@ int Settings::load_from_args(int argc, char* argv[])
 		case 'l':
 			cam_name = optarg;
 			break;
-		default: /* '?' */
+		default: //Should never happen
 			will_print_usage = true;
 			break;
 		}

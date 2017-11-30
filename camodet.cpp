@@ -6,8 +6,6 @@
 
 #include "settings.h"
 
-#define TIME_REC_AFTER 10 /* Record seconds after stop motion */
-
 using namespace cv;
 using namespace std;
 

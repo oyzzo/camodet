@@ -37,7 +37,7 @@ For other distros use the script as a guide for the steps.
 The www.opencv.org documentation on how to compile it for your Operating System, can also be used.
 
 ### Building
-Download and extract the sources, then inside:
+[Download](https://github.com/oyzzo/camodet/releases/latest) and extract the sources, then inside:
 ```
 mkdir build
 cd build

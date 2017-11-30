@@ -1,5 +1,5 @@
 # camodet
-CAmera MOtion DETection application. 
+__CAmera MOtion DETection application.__
 
 Fast, simple and stable motion detection application that works with any local and remote cameras or video sources.
 
@@ -27,14 +27,22 @@ __camodet__ is ultra lightweight, portable and fast, it can be run in a raspberr
 * __Any shape ROI mask__, use a black/white mask image to only detect motion in the desired areas, ignoring the rest.
 
 ## Compile
+
+### Dependencies
 For Ubuntu based distros use the __prepare.sh__ script, it'll install all dependencies and will compile OpenCV3.
+```
+./prepare.sh
+``` 
 For other distros use the script as a guide for the steps.
 The www.opencv.org documentation on how to compile it for your Operating System, can also be used.
 
+### Building
 Download and extract the sources, then inside:
-1) mkdir build
-2) cd build
-3) cmake ..
-4) make
+```
+mkdir build
+cd build
+cmake ..
+make
+```
 
 done!

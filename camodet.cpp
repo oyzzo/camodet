@@ -29,7 +29,7 @@ static void log_event(string event)
 static void generate_mask_template(Mat frame)
 {
 	vector<int> compression_params;
-	compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
 	compression_params.push_back(9);
 
     try {
@@ -155,7 +155,7 @@ int main(int argc, char** argv) {
 				record = true;
 				counter++;
 				nameStream << settings.output_name << counter << ".avi";
-				writer.open(nameStream.str().c_str(), CV_FOURCC('X','V','I','D'),15,size);
+				writer.open(nameStream.str().c_str(), cv::VideoWriter::fourcc('X','V','I','D'),15,size);
 				log_event("Motion Start");
 				log_event("Recording file: " + nameStream.str());
 			}

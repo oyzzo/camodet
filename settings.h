@@ -21,6 +21,9 @@ public:
 	bool show_input; /** Shall we show the input video */
 	bool timestamp; /** Shall we add the time to the video */
 	bool mask_template; /** Shall we generate a mask template */
+	unsigned int fps; /** FPS to process */
+	unsigned int frames_trigger; /** Number of consecutive frames with motion to trigger motion event */
+	string command; /** Command to execute when motion is detected */
 	int load_from_args(int argc, char* argv[]); /** Load settings from arguments */
 	void print_usage(char* name); /** Load settings from arguments */
 	Settings();

@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(camodet)
 
 set(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 
 function(add_clang_static_analysis target)
     get_target_property(SRCs ${target} SOURCES)

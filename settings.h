@@ -24,6 +24,7 @@ public:
 	unsigned int fps; /** FPS to process */
 	unsigned int frames_trigger; /** Number of consecutive frames with motion to trigger motion event */
 	string command; /** Command to execute when motion is detected */
+	bool draw_contours; /** Shall we draw contours to the video */
 	int load_from_args(int argc, char* argv[]); /** Load settings from arguments */
 	void print_usage(char* name); /** Load settings from arguments */
 	Settings();

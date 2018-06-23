@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
 		(int)cap.get(CAP_PROP_FRAME_WIDTH),
 		(int)cap.get(CAP_PROP_FRAME_HEIGHT)
 	);
-	Mat frame, pyr1, gray, gaus, delta, old, binary, dilated, mask, bin_mask;
+	Mat frame, pyr1, gray, gaus, delta, old, binary, dilated, mask, bin_mask, dst;
 	Mat element = getStructuringElement(MORPH_RECT,Size(7,7),Point(-1,-1));
 
 	//Generate ROI mask template if needed
@@ -151,7 +151,8 @@ int main(int argc, char** argv) {
 		}
 		dilate(binary,dilated, element, Point(-1,-1), 2);
 		vector<vector < Point > > contours0;
-		findContours(dilated, contours0, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+		vector<Vec4i> hierarchy;
+		findContours(dilated, contours0, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
 		ostringstream nameStream;
 		ostringstream timeStream;
@@ -170,6 +171,19 @@ int main(int argc, char** argv) {
 		//Add timestamp to video
 		if (settings.timestamp) {
 			putText(frame, time, Point2f(15,size.height - 15), FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255), 2);
+		}
+
+		if (settings.draw_contours) {
+			/* Draw contours */
+        	        Mat drawing = Mat::zeros( dilated.size(), CV_8UC3 );
+                	RNG rng(12345);
+	                for( int i = 0; i< contours0.size(); i++ )
+        	        {
+                	        Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+                        	drawContours( drawing, contours0, i, color, 2, 8, hierarchy, 0, Point() );
+	                }
+	                pyrUp(drawing,dst);
+        	        add( frame, dst, frame);
 		}
 
 		for (size_t k = 0; k < contours0.size(); k++) {

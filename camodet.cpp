@@ -3,6 +3,7 @@
 #include <math.h>
 #include <ctime>
 #include <chrono>
+#include <signal.h>
 #include <thread>
 
 #include "settings.h"
@@ -60,6 +61,7 @@ int main(int argc, char** argv) {
 		exit(-1);
 	}
 
+	signal( SIGPIPE, SIG_IGN ) ;
 	bool record = false;
 	double t2 = 0;
 	double t3 = 0;

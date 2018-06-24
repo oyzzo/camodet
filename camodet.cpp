@@ -111,7 +111,9 @@ int main(int argc, char** argv) {
 	if (settings.mask_file != "") {
 		do_mask = true;
 		mask = imread(settings.mask_file,IMREAD_GRAYSCALE);	
-		pyrDown(mask,mask);
+		while (mask.size().width > settings.max_width) {
+			pyrDown(mask,mask);
+		}
 		threshold(mask,bin_mask,15,255,THRESH_BINARY);
 	}
 
@@ -121,21 +123,30 @@ int main(int argc, char** argv) {
 	if (settings.fps > fps) settings.fps = fps;
 	long now = 0;
 	long nextframe = 0;
+	long startframe = 0;
+	int numframe = 0;
 	for (;;) {
 		now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		cap >> frame;
-		//log_event("fps: " + to_string(fps));
 		if (fps > settings.fps) {
+			if (startframe == 0) startframe = now;
 			if (now < nextframe) {
 				//do not process this frame
 				continue;
 			}
-			nextframe = now + (1000/settings.fps);
+			numframe++;
+			nextframe = startframe + ((1000/settings.fps)*numframe);
+			if (numframe>settings.fps) {
+				numframe=0;
+				startframe=startframe + ((1000/settings.fps)*(1+settings.fps));
+			}
 		}
-		//log_event("process frame " + to_string(settings.fps) + " - " + to_string(fps) + "now:"+to_string(now) + " next:"+to_string(nextframe));
 
 		if (frame.empty()) break; //ran out of film
-		pyrDown(frame,pyr1);
+		pyr1 = frame.clone();
+		while (pyr1.size().width > settings.max_width) {
+			pyrDown(pyr1,pyr1);
+		}
 		cvtColor(pyr1, gray, COLOR_BGR2GRAY);
 		GaussianBlur(gray, gaus,Size(n,n), 5,5);
 		if (!started) {
@@ -182,7 +193,10 @@ int main(int argc, char** argv) {
                 	        Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
                         	drawContours( drawing, contours0, i, color, 2, 8, hierarchy, 0, Point() );
 	                }
-	                pyrUp(drawing,dst);
+			dst = drawing.clone();
+			while (dst.size().width < frame.size().width) {
+				pyrUp(dst,dst);
+			}
         	        add( frame, dst, frame);
 		}
 

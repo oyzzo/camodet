@@ -3,6 +3,8 @@
 #include <math.h>
 #include <ctime>
 #include <chrono>
+#include <signal.h>
+#include <thread>
 
 #include "settings.h"
 
@@ -21,6 +23,15 @@ static void log_event(string event)
 	cout << ctime(&time_now) << " - " << event << endl;
 }
 
+/** @brief Exec external command function
+ * This function will execute the command passed on the
+ * setting k parameter when motion is detected
+ * @param command The command to be executed
+ */
+static void execCommand(string command) {
+	system(command.c_str());
+}
+
 /** @brief Sabe ROI mask template to image file
  * This function generates an image template for creating
  * The ROI mask.
@@ -29,7 +40,7 @@ static void log_event(string event)
 static void generate_mask_template(Mat frame)
 {
 	vector<int> compression_params;
-	compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	compression_params.push_back(IMWRITE_PNG_COMPRESSION);
 	compression_params.push_back(9);
 
     try {
@@ -50,10 +61,12 @@ int main(int argc, char** argv) {
 		exit(-1);
 	}
 
+	signal( SIGPIPE, SIG_IGN ) ;
 	bool record = false;
 	double t2 = 0;
 	double t3 = 0;
 	int motion = 0;
+	int frames_motion = 0;
 	VideoWriter writer;
 	int counter = 0; /* Video name counter */
 
@@ -63,6 +76,7 @@ int main(int argc, char** argv) {
 	//If no provided input source, try to open the 
 	//first device's camera
 	if (settings.input_source == "") { 
+		cap.set(CAP_PROP_FPS, settings.fps);
 		cap.open(0);
 	} else {
 		cap.open(settings.input_source);
@@ -83,7 +97,7 @@ int main(int argc, char** argv) {
 		(int)cap.get(CAP_PROP_FRAME_WIDTH),
 		(int)cap.get(CAP_PROP_FRAME_HEIGHT)
 	);
-	Mat frame, pyr1, gray, gaus, delta, old, binary, dilated, mask, bin_mask;
+	Mat frame, pyr1, gray, gaus, delta, old, binary, dilated, mask, bin_mask, dst;
 	Mat element = getStructuringElement(MORPH_RECT,Size(7,7),Point(-1,-1));
 
 	//Generate ROI mask template if needed
@@ -97,16 +111,42 @@ int main(int argc, char** argv) {
 	if (settings.mask_file != "") {
 		do_mask = true;
 		mask = imread(settings.mask_file,IMREAD_GRAYSCALE);	
-		pyrDown(mask,mask);
+		while (mask.size().width > settings.max_width) {
+			pyrDown(mask,mask);
+		}
 		threshold(mask,bin_mask,15,255,THRESH_BINARY);
 	}
 
 	unsigned int n = settings.noise;
+	int numfps = 0;
+	int fps = cap.get(CAP_PROP_FPS);
+	if (settings.fps > fps) settings.fps = fps;
+	long now = 0;
+	long nextframe = 0;
+	long startframe = 0;
+	int numframe = 0;
 	for (;;) {
+		now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		cap >> frame;
+		if (fps > settings.fps) {
+			if (startframe == 0) startframe = now;
+			if (now < nextframe) {
+				//do not process this frame
+				continue;
+			}
+			numframe++;
+			nextframe = startframe + ((1000/settings.fps)*numframe);
+			if (numframe>settings.fps) {
+				numframe=0;
+				startframe=startframe + ((1000/settings.fps)*(1+settings.fps));
+			}
+		}
 
 		if (frame.empty()) break; //ran out of film
-		pyrDown(frame,pyr1);
+		pyr1 = frame.clone();
+		while (pyr1.size().width > settings.max_width) {
+			pyrDown(pyr1,pyr1);
+		}
 		cvtColor(pyr1, gray, COLOR_BGR2GRAY);
 		GaussianBlur(gray, gaus,Size(n,n), 5,5);
 		if (!started) {
@@ -122,7 +162,8 @@ int main(int argc, char** argv) {
 		}
 		dilate(binary,dilated, element, Point(-1,-1), 2);
 		vector<vector < Point > > contours0;
-		findContours(dilated, contours0, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+		vector<Vec4i> hierarchy;
+		findContours(dilated, contours0, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
 		ostringstream nameStream;
 		ostringstream timeStream;
@@ -143,8 +184,31 @@ int main(int argc, char** argv) {
 			putText(frame, time, Point2f(15,size.height - 15), FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255), 2);
 		}
 
+		if (settings.draw_contours) {
+			/* Draw contours */
+        	        Mat drawing = Mat::zeros( dilated.size(), CV_8UC3 );
+                	RNG rng(12345);
+	                for( int i = 0; i< contours0.size(); i++ )
+        	        {
+                	        Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+                        	drawContours( drawing, contours0, i, color, 2, 8, hierarchy, 0, Point() );
+	                }
+			dst = drawing.clone();
+			while (dst.size().width < frame.size().width) {
+				pyrUp(dst,dst);
+			}
+        	        add( frame, dst, frame);
+		}
+
 		for (size_t k = 0; k < contours0.size(); k++) {
 			if (contourArea(contours0[k]) < settings.area) {
+				frames_motion = 0;
+				continue;
+			}
+
+			frames_motion++;
+			if (frames_motion < settings.frames_trigger) {
+				/* Not enough frames to trigger motion yet */
 				continue;
 			}
 			
@@ -152,18 +216,25 @@ int main(int argc, char** argv) {
 			t2 = 0;
 
 			if (!record) {
+				log_event("Motion Start");
 				record = true;
 				counter++;
 				nameStream << settings.output_name << counter << ".avi";
-				writer.open(nameStream.str().c_str(), CV_FOURCC('X','V','I','D'),15,size);
-				log_event("Motion Start");
+				writer.open(nameStream.str().c_str(), VideoWriter::fourcc('X','V','I','D'),settings.fps,size);
 				log_event("Recording file: " + nameStream.str());
+	
+				if (settings.command != "") {
+					log_event("Executing command: " + settings.command);
+					thread exec(execCommand, settings.command);
+					exec.detach();
+				}
 			}
 	
 		}
 		if (motion == 0 && record && t2 == 0) {
 			/* If no motion in this frame, stop recording */
 			t2 = getTickCount();	
+			frames_motion = 0;
 		}
 		motion = 0; /* Reset motion detected for the new frame */
 

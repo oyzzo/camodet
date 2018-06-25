@@ -14,9 +14,14 @@ Settings::Settings()
 	debug = 0;
 	area = 600;
 	noise = 21;
+	fps = 5;
+	frames_trigger = 2;
 	timestamp = false;
 	mask_template = false;
 	mask_file = "";
+	command = "";
+	draw_contours = false;
+	max_width = 640;
 }
 
 /** @brief Load settings from command line arguments
@@ -29,7 +34,7 @@ int Settings::load_from_args(int argc, char* argv[])
 	int opt;
 	bool will_print_usage = false;
 
-	while ((opt = getopt(argc, argv, "i:o:sa:c:d:ht:n:l:Dgm:")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:sa:c:d:ht:n:l:Dgm:f:k:x:CM:")) != -1) {
 		switch (opt) {
 		case 'i':
 			input_source = optarg;
@@ -69,6 +74,21 @@ int Settings::load_from_args(int argc, char* argv[])
 			break;
 		case 'm':
 			mask_file = optarg;
+			break;
+		case 'f':
+			fps = atoi(optarg);
+			break;
+		case 'k':
+			frames_trigger = atoi(optarg);
+			break;
+		case 'x':
+			command = optarg;
+			break;
+		case 'C':
+			draw_contours = true;
+			break;
+		case 'M':
+			max_width = atoi(optarg);
 			break;
 		default: //Should never happen
 			will_print_usage = true;
@@ -118,6 +138,10 @@ void Settings::print_usage(char* name)
 	<< "    -t number:      Threshold area (sqare pixels) to trigger detection." << endl 
 	<< "                    Movements below this area are ignored (Default 600)." << endl
 	<< "    -n number:      Noise reduction level (Default 21)." << endl
+	<< "    -f number:      FPS to process from input source (Default 5)" << endl
+	<< "    -k number:      Number of consecutive frames with motion to trigger motion event (Default 2)" << endl
+	<< "    -x command:     Command to be executed when motion is detected" << endl
+	<< "    -M number:      Max width of frame to be processed for motion detection, if input is larger it will be downsized to this value. (Default 640)" << endl
 	<< "    -d number:      Show intermediate images in a debug window. Number can be:" << endl
 	<< "                    1: noise reduction | 2: frames difference | 3: threshold | 4:dilated(final)" << endl;
 }

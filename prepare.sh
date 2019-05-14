@@ -34,12 +34,10 @@ echo "Getting the OpenCV3 sources..."
 git clone https://github.com/opencv/opencv.git opencv
 
 echo "Compiling OpenCV3, This may take a while..."
-# Use several threads depending on the cpus of the machine
-NCPUS=`cat /proc/cpuinfo | grep processor | wc -l`
 
 cd ./opencv && mkdir build && cd build
 cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local ..
-make -j $NCPUS
+make VERBOSE=1
 make install
 
 # DONE! now everything is prepared to compile camodet

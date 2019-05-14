@@ -8,6 +8,8 @@
 
 #include "settings.h"
 
+//#define HEADLESS
+
 using namespace cv;
 using namespace std;
 
@@ -84,6 +86,7 @@ int main(int argc, char** argv) {
 	
 	counter = settings.counter_start;
 
+#ifndef HEADLESS
 	//Prepare windows
 	if (settings.debug > 0 && settings.debug < 5) {
 		namedWindow("Debug", WINDOW_AUTOSIZE);
@@ -91,7 +94,7 @@ int main(int argc, char** argv) {
 	if (settings.show_input) {
 		namedWindow("Input", WINDOW_AUTOSIZE);
 	}
-
+#endif
 
 	Size size(
 		(int)cap.get(CAP_PROP_FRAME_WIDTH),
@@ -238,12 +241,13 @@ int main(int argc, char** argv) {
 		}
 		motion = 0; /* Reset motion detected for the new frame */
 
-
+#ifndef HEADLESS
 		//Show input source if desired
 		if (settings.show_input) {
 			namedWindow("Input", WINDOW_AUTOSIZE);
 			imshow("Input", frame);
 		}
+#endif 
 
 		/* Now compute time to stop recording */
 		if (record && t2 != 0) {
@@ -260,6 +264,7 @@ int main(int argc, char** argv) {
 			writer << frame;
 		}
 
+#ifndef HEADLESS
 		//Debug window
 		switch (settings.debug) {
 		case 1:
@@ -278,6 +283,7 @@ int main(int argc, char** argv) {
 			break;
 		}
 		if(waitKey(33) == 0) return 0;
+#endif
 	}	
 	return 0;
 }

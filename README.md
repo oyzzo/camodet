@@ -47,6 +47,14 @@ make
 
 done!
 
+## Docker
+
+`docker run --rm -it --network host -v "$(pwd)/output:/output" wojsudol/camodet:latest -i "http://camera1.mairie-brest.fr/mjpg/video.mjpg?resolution=640x480" -o "/optout/video_name"`
+
+For easy access to video source from you local network, use docker `--network host` parameter.
+
+To exit running process press ctrl+pq.
+
 ## Usage
 
 To get a list with a description of all parameters use the -h flag:
